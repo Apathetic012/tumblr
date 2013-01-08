@@ -6,7 +6,7 @@ Todo
 -----
  - <del>docblock</del>
  - tests
- - examples
+ - <del>examples</del>
 
 Install
 -----
@@ -15,7 +15,7 @@ Via [Composer](http://getcomposer.org):
 ```json
 {
     "require": {
-        "apathetic/tumblr": "1.0.0"
+        "apathetic/tumblr": ">=1.0.0"
     }
 }
 ```
