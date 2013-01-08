@@ -135,7 +135,6 @@ class Main {
 				$params
 			)
 		);
-
 		$response = array_keys($response);
 
 		return json_decode($response[0]);
