@@ -136,7 +136,9 @@ class Main {
 			)
 		);
 
-		return json_decode(array_keys($response)[0]);
+		$response = array_keys($response);
+
+		return json_decode($response[0]);
 	}
 
 	public function __call($method, $params)
