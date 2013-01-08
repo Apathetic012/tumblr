@@ -1,11 +1,12 @@
 # apathetic/tumblr
 
-API wrapper for the Tumblr v2 API
+API wrapper for the [Tumblr v2 API](www.tumblr.com/api_docs)
 
 Todo
 -----
  - docblock
  - tests
+ - examples
 
 Install
 -----
@@ -23,16 +24,27 @@ Usage
 ----
 
 ```php
-use Tumblr\Main as Tumblr;
-
 $config = array(
     'consumerKey' => '',
     'consumerSecretKey' => '',
-    'baseUrl' =>
+    'baseUrl' => ''
 );
 
-$api = new Tumblr($config);
+// handle oauth
 
+// use the oauth tokens
+$api = new Tumblr($config, $access_token['oauth_token'], $access_token['oauth_token_secret']);
+
+// post an image
+$params = array(
+	'type' => 'photo',
+	'caption' => 'I saw Justin Bieber!!!!',
+	'tags' => 'omg, omgomg, omgomgomg'
+	'data' => array(
+		file_get_contents('stolenphoto.jpg')
+	)
+);
+$request = $api->post('/post', $params);
 /* To be continued */
 ```
 
