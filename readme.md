@@ -4,7 +4,7 @@ API wrapper for the [Tumblr v2 API](www.tumblr.com/api_docs)
 
 Todo
 -----
- - docblock
+ - <del>docblock</del>
  - tests
  - examples
 

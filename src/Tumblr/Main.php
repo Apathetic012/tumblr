@@ -8,30 +8,75 @@ use Eher\OAuth\Util;
 
 class Main {
 
+	/**
+	 * Request token Endpoint
+	 * @var string
+	 */
 	private $requestTokenUrl = 'http://www.tumblr.com/oauth/request_token';
-	private $AuthorizeUrl = 'http://www.tumblr.com/oauth/authorize';
-	private $accessTokenUrl = 'http://www.tumblr.com/oauth/access_token';
-	private $config;
+
+	/**
+	 * Authorization Endpoint
+	 * @var string
+	 */
+	private $AuthorizeUrl    = 'http://www.tumblr.com/oauth/authorize';
+
+	/**
+	 * Access Token Endpoint
+	 * @var string
+	 */
+	private $accessTokenUrl  = 'http://www.tumblr.com/oauth/access_token';
+
+	/**
+	 * store the config
+	 * @var array
+	 */
+	private $config = array();
+
+	/**
+	 * POST data
+	 * @var mixed
+	 */
 	private $data;
+
+	/**
+	 * OAuth token
+	 * @var mixed
+	 */
 	private $token;
+
+	/**
+	 * Consumer
+	 * @var Eher\OAuth\Consumer
+	 */
 	private $consumer;
-	private $oAuthToken;
+
+	/**
+	 * Signature method
+	 * @var Eher\OAuth\HmacSha1
+	 */
 	private $signatureMethod;
 
-	public function __construct($config, $oAuthToken = null, $oAuthSecret = null)
+	/**
+	 *
+	 * @param array  $config
+	 * @param string $oAuthToken
+	 * @param string $oAuthSecret
+	 */
+	public function __construct(array $config, $oAuthToken = null, $oAuthSecret = null)
 	{
 		if (
 			! isset($config['consumerKey']) ||
 			! isset($config['consumerSecretKey']) ||
 			! isset($config['baseUrl'])
 		) {
-			$keys = array_keys($config);
+			$keys    = array_keys($config);
 			$missing = array_diff(array('consumerKey','consumerSecretKey','baseUrl'), array_keys($config));
+
 			throw new TumblrException('Missing configuration: ' . implode(',', $missing));
 		}
 
-		$this->config = $config;
-		$this->consumer = new Consumer($config['consumerKey'], $config['consumerSecretKey']);
+		$this->config          = $config;
+		$this->consumer        = new Consumer($config['consumerKey'], $config['consumerSecretKey']);
 		$this->signatureMethod = new HmacSha1();
 
 		if ( ! is_null($oAuthToken) and ! is_null($oAuthSecret)) {
@@ -41,38 +86,55 @@ class Main {
 		}
 	}
 
-	public function getUrl()
-	{
-		return $this->url;
-	}
-
+	/**
+	 * Get OAuth access token
+	 * @param  string $oauthVerifier oAuth verifier
+	 * @return array
+	 */
 	public function getAccessToken($oauthVerifier)
 	{
 		$params = array('oauth_verifier' => $oauthVerifier);
-		$token = $this->makeRequest($this->accessTokenUrl, 'POST', $params);
+		$token  = $this->makeRequest($this->accessTokenUrl, 'POST', $params);
 
 		return $token;
 	}
 
+	/**
+	 * Get OAuth request token
+	 * @param  mixed $callback Optional callback URL
+	 * @return array
+	 */
 	public function getRequestToken($callback = false)
 	{
 		$params = array();
 
-		if ( $callback) {
+		if ($callback) {
 			$params['oauth_callback'] = $callback;
 		}
 
-		$token = $this->makeRequest($this->requestTokenUrl, 'GET', $params);
+		$token       = $this->makeRequest($this->requestTokenUrl, 'GET', $params);
 		$this->token = new Consumer($token['oauth_token'], $token['oauth_token_secret']);
 
 		return $token;
 	}
 
+	/**
+	 * Get Authorize URL
+	 * @param  string $oAuthToken
+	 * @return string
+	 */
 	public function getAuthorizeUrl($oAuthToken)
 	{
 		return $this->AuthorizeUrl . '?oauth_token=' . $oAuthToken;
 	}
 
+	/**
+	 * Make a request
+	 * @param  string $url    API Endpoint URl
+	 * @param  string $method HTTP Verb
+	 * @param  array  $params
+	 * @return array
+	 */
 	protected function makeRequest($url, $method, $params)
 	{
 		$request = Request::from_consumer_and_token(
@@ -85,25 +147,31 @@ class Main {
 
 		$request->sign_request($this->signatureMethod, $this->consumer, $this->token);
 
-		switch($method) {
+		switch ($method) {
+			case 'GET':
+				$url = $request->to_url();
+				break;
 			case 'POST':
 				$url = $request->get_normalized_http_url();
 				$this->data = $request->to_postdata();
 				break;
-			default:
-				$url = $request->to_url();
-				break;
-
 		}
 
-		$response = $this->curl($url , $method);
+		$response = $this->curl($url, $method);
 
 		return Util::parse_parameters($response);
 	}
 
+	/**
+	 * Do a cURL request
+	 * @param  string $url
+	 * @param  string $method
+	 * @return mixed
+	 */
 	protected function curl($url, $method)
 	{
 		$ch = curl_init();
+
 		switch ($method) {
 			case 'GET':
 				curl_setopt_array($ch, array(
@@ -118,6 +186,7 @@ class Main {
 					CURLOPT_POSTFIELDS => $this->data,
 					CURLOPT_RETURNTRANSFER => true
 				));
+				break;
 		}
 
 		$response = curl_exec($ch);
@@ -125,6 +194,13 @@ class Main {
 		return $response;
 	}
 
+	/**
+	 * Call an API Method
+	 * @param  string $url    URI Segment
+	 * @param  string $method HTTP Verb
+	 * @param  array  $params
+	 * @return obj         	  JSON
+	 */
 	protected function callApi($url, $method, $params)
 	{
 		$response = call_user_func_array(
@@ -154,7 +230,8 @@ class Main {
 				$params[0],
 				strtoupper($method),
 				$parameters
-		));
+			)
+		);
 	}
 }
 
