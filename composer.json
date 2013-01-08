@@ -2,7 +2,8 @@
     "name": "apathetic/tumblr",
     "description": "Tumblr OAuth",
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.3.0",
+        "Eher/OAuth": "1.0.7"
     },
     "autoload": {
         "psr-0": {
