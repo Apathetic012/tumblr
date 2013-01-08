@@ -23,6 +23,8 @@ Usage
 ----
 
 ```php
+use Tumblr\Main as Tumblr;
+
 $config = array(
     'consumerKey' => '',
     'consumerSecretKey' => '',
