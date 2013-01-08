@@ -29,24 +29,9 @@ $config = array(
     'consumerSecretKey' => '',
     'baseUrl' => ''
 );
-
-// handle oauth
-
-// use the oauth tokens
-$api = new Tumblr($config, $access_token['oauth_token'], $access_token['oauth_token_secret']);
-
-// post an image
-$params = array(
-	'type' => 'photo',
-	'caption' => 'I saw Justin Bieber!!!!',
-	'tags' => 'omg, omgomg, omgomgomg'
-	'data' => array(
-		file_get_contents('stolenphoto.jpg')
-	)
-);
-$request = $api->post('/post', $params);
-/* To be continued */
 ```
+
+See [example directory](https://github.com/Apathetic012/tumblr/tree/master/example).
 
 Credits
 ---
