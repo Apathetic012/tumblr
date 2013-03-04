@@ -1,6 +1,0 @@
-{
-        "require": {
-                "Eher/OAuth": "1.0.7",
-                "apathetic/tumblr": ">=1.0.1"
-        }
-}
